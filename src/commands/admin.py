@@ -14,14 +14,12 @@ from utils import (
 def setup_admin_commands(bot, bot_start_time):
     """Set up admin-related commands."""
     
-    @bot.tree.command(name="botinfo", description="Show bot statistics and info (admin)")
-    async def botinfo(interaction: discord.Interaction):
+    @bot.command(name="botinfo")
+    async def botinfo(ctx):
+        """Show bot statistics and info (admin)"""
         # Check if user is admin
-        if not is_admin_user(interaction.user.id):
-            await interaction.response.send_message(
-                "❌ You need admin permissions to use this command.",
-                ephemeral=True
-            )
+        if not is_admin_user(ctx.author.id):
+            await ctx.send("❌ You need admin permissions to use this command.")
             return
             
         # Calculate uptime
@@ -113,77 +111,69 @@ def setup_admin_commands(bot, bot_start_time):
                 inline=False
             )
         
-        embed.set_footer(text=f"Requested by {interaction.user.display_name}")
+        embed.set_footer(text=f"Requested by {ctx.author.display_name}")
         
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await ctx.send(embed=embed)
 
-    @bot.tree.command(name="sync", description="Sync slash commands (owner)")
-    async def sync_commands(interaction: discord.Interaction):
+    @bot.command(name="sync")
+    async def sync_commands(ctx):
+        """Sync slash commands (owner)"""
         # Check if user is admin
-        if not is_admin_user(interaction.user.id):
-            await interaction.response.send_message("❌ Only admins can use this command.", ephemeral=True)
+        if not is_admin_user(ctx.author.id):
+            await ctx.send("❌ Only admins can use this command.")
             return
         
         try:
-            await interaction.response.defer(ephemeral=True)
+            msg = await ctx.send("⏳ Syncing slash commands...")
             synced = await bot.tree.sync()
-            await interaction.followup.send(f"✅ Successfully synced {len(synced)} slash commands!", ephemeral=True)
+            await msg.edit(content=f"✅ Successfully synced {len(synced)} slash commands!")
         except Exception as e:
-            await interaction.followup.send(f"❌ Failed to sync commands: {e}", ephemeral=True)
+            await ctx.send(f"❌ Failed to sync commands: {e}")
 
-    @bot.tree.command(name="authorize", description="Add user to admin list (admin)")
-    async def authorize_user(interaction: discord.Interaction, user: discord.Member):
+    @bot.command(name="authorize")
+    async def authorize_user(ctx, user: discord.Member):
+        """Add user to admin list (admin)"""
         # Check if user is admin
-        if not is_admin_user(interaction.user.id):
-            await interaction.response.send_message("❌ Only admins can manage authorized users.", ephemeral=True)
+        if not is_admin_user(ctx.author.id):
+            await ctx.send("❌ Only admins can manage authorized users.")
             return
         
         if add_admin_user(user.id):
-            await interaction.response.send_message(
-                f"✅ {user.display_name} has been added to the admin list.",
-                ephemeral=True
-            )
+            await ctx.send(f"✅ {user.display_name} has been added to the admin list.")
         else:
-            await interaction.response.send_message(
-                f"ℹ️ {user.display_name} is already an admin.",
-                ephemeral=True
-            )
+            await ctx.send(f"ℹ️ {user.display_name} is already an admin.")
 
-    @bot.tree.command(name="deauthorize", description="Remove user from admin list (admin)")
-    async def deauthorize_user(interaction: discord.Interaction, user: discord.Member):
+    @bot.command(name="deauthorize")
+    async def deauthorize_user(ctx, user: discord.Member):
+        """Remove user from admin list (admin)"""
         # Check if user is admin
-        if not is_admin_user(interaction.user.id):
-            await interaction.response.send_message("❌ Only admins can manage authorized users.", ephemeral=True)
+        if not is_admin_user(ctx.author.id):
+            await ctx.send("❌ Only admins can manage authorized users.")
             return
         
         if remove_admin_user(user.id):
-            await interaction.response.send_message(
-                f"✅ {user.display_name} has been removed from the admin list.",
-                ephemeral=True
-            )
+            await ctx.send(f"✅ {user.display_name} has been removed from the admin list.")
         else:
-            await interaction.response.send_message(
-                f"ℹ️ {user.display_name} was not in the admin list.",
-                ephemeral=True
-            )
+            await ctx.send(f"ℹ️ {user.display_name} was not in the admin list.")
 
-    @bot.tree.command(name="listauthorized", description="List all admin users (admin)")
-    async def list_authorized(interaction: discord.Interaction):
+    @bot.command(name="listauthorized")
+    async def list_authorized(ctx):
+        """List all admin users (admin)"""
         # Check if user is admin
-        if not is_admin_user(interaction.user.id):
-            await interaction.response.send_message("❌ Only admins can view the admin users list.", ephemeral=True)
+        if not is_admin_user(ctx.author.id):
+            await ctx.send("❌ Only admins can view the admin users list.")
             return
         
         admin_ids = get_admin_users()
         if not admin_ids:
-            await interaction.response.send_message("ℹ️ No admin users are currently configured.", ephemeral=True)
+            await ctx.send("ℹ️ No admin users are currently configured.")
             return
         
         user_list = []
         for user_id in admin_ids:
             user = bot.get_user(user_id)
             if user:
-                user_list.append(f"• {user.display_name} (`{user.id}`)")
+                user_list.append(f"• {user.display_name} (`{user.id}`)")  
             else:
                 user_list.append(f"• Unknown User (`{user_id}`)")
         
@@ -195,28 +185,23 @@ def setup_admin_commands(bot, bot_start_time):
         )
         embed.set_footer(text=f"Total: {len(admin_ids)} admins")
         
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await ctx.send(embed=embed)
 
-    @bot.tree.command(name="setlogchannel", description="Set global logging channel (admin)")
-    async def setlogchannel(interaction: discord.Interaction, channel: discord.TextChannel = None):
+    @bot.command(name="setlogchannel")
+    async def setlogchannel(ctx, channel: discord.TextChannel = None):
+        """Set global logging channel (admin)"""
         # Check if user is admin
-        if not is_admin_user(interaction.user.id):
-            await interaction.response.send_message(
-                "❌ You need admin permissions to set the logging channel.",
-                ephemeral=True
-            )
+        if not is_admin_user(ctx.author.id):
+            await ctx.send("❌ You need admin permissions to set the logging channel.")
             return
 
-        if interaction.guild is None:
-            await interaction.response.send_message(
-                "❌ This command must be used in a server.",
-                ephemeral=True
-            )
+        if ctx.guild is None:
+            await ctx.send("❌ This command must be used in a server.")
             return
 
         # If no channel specified, use current channel
         if channel is None:
-            channel = interaction.channel
+            channel = ctx.channel
 
         # Set the global log channel (logs activity from ALL servers)
         from utils import set_global_log_channel_id
@@ -248,11 +233,11 @@ def setup_admin_commands(bot, bot_start_time):
         )
 
         embed.set_footer(
-            text=f"Set by {interaction.user.display_name}",
-            icon_url=interaction.user.display_avatar.url
+            text=f"Set by {ctx.author.display_name}",
+            icon_url=ctx.author.display_avatar.url
         )
 
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await ctx.send(embed=embed)
 
         # Send a test message to the logging channel
         try:
@@ -277,19 +262,17 @@ def setup_admin_commands(bot, bot_start_time):
                 description=f"I cannot send messages to {channel.mention}. Please ensure I have **Send Messages** permission in that channel.",
                 color=0xff6600
             )
-            await interaction.followup.send(embed=error_embed, ephemeral=True)
+            await ctx.send(embed=error_embed)
 
-    @bot.tree.command(name="globalmessage", description="Send global message (admin)")
-    async def global_message(interaction: discord.Interaction, message: str):
+    @bot.command(name="globalmessage")
+    async def global_message(ctx, *, message: str):
+        """Send global message (admin)"""
         # Check if user is admin
-        if not is_admin_user(interaction.user.id):
-            await interaction.response.send_message(
-                "❌ You need admin permissions to send global messages.",
-                ephemeral=True
-            )
+        if not is_admin_user(ctx.author.id):
+            await ctx.send("❌ You need admin permissions to send global messages.")
             return
 
-        await interaction.response.defer(ephemeral=True)
+        status_msg = await ctx.send("⏳ Sending global message...")
         
         # Create the global message embed
         global_embed = discord.Embed(
@@ -300,8 +283,8 @@ def setup_admin_commands(bot, bot_start_time):
         )
         
         global_embed.set_footer(
-            text=f"Sent by {interaction.user.display_name}",
-            icon_url=interaction.user.display_avatar.url
+            text=f"Sent by {ctx.author.display_name}",
+            icon_url=ctx.author.display_avatar.url
         )
         
         # Get all guilds and their configured channels
@@ -402,23 +385,20 @@ def setup_admin_commands(bot, bot_start_time):
         
         summary_embed.set_footer(text="Global message delivery complete")
         
-        await interaction.followup.send(embed=summary_embed, ephemeral=True)
+        await status_msg.edit(content=None, embed=summary_embed)
 
-    @bot.tree.command(name="testsetup", description="Test welcome setup message (admin)")
-    async def test_setup(interaction: discord.Interaction):
+    @bot.command(name="testsetup")
+    async def test_setup(ctx):
+        """Test welcome setup message (admin)"""
         # Check if user is admin
-        if not is_admin_user(interaction.user.id):
-            await interaction.response.send_message(
-                "❌ You need admin permissions to test the setup message.",
-                ephemeral=True
-            )
+        if not is_admin_user(ctx.author.id):
+            await ctx.send("❌ You need admin permissions to test the setup message.")
             return
 
         # Create and send the welcome embed
         welcome_embed = create_welcome_embed()
         
-        await interaction.response.send_message(
+        await ctx.send(
             "🧪 **Testing Setup Message** - This is what new servers see when the bot joins:",
-            embed=welcome_embed,
-            ephemeral=True
+            embed=welcome_embed
         )

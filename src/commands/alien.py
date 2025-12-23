@@ -160,7 +160,7 @@ def setup_alien_commands(bot):
             # Create file attachment for local image
             file_path = "assets/images/image.png"
             file = discord.File(file_path, filename="grok_image.png")
-            embed.set_image(url="attachment://grok_image.png")
+            embed.set_thumbnail(url="attachment://grok_image.png")
             
             await interaction.followup.send(embed=embed, file=file)
             
