@@ -13,6 +13,9 @@ def setup_setup_commands(bot):
     @bot.tree.command(name="setchannel", description="Set UFO images channel")
     @discord.app_commands.checks.has_permissions(manage_guild=True)
     async def setchannel(interaction: discord.Interaction):
+        if not interaction.guild:
+            await interaction.response.send_message("❌ This command must be used in a server.", ephemeral=True)
+            return
         config = load_config()
         guild_id = str(interaction.guild.id)
         
@@ -25,9 +28,13 @@ def setup_setup_commands(bot):
             
         config[guild_id]["channel_id"] = interaction.channel_id
         save_config(config)
-
+        
+        channel_name = "this channel"
+        if interaction.channel and isinstance(interaction.channel, (discord.TextChannel, discord.VoiceChannel, discord.ForumChannel, discord.StageChannel)):
+            channel_name = interaction.channel.name
+        
         await interaction.response.send_message(
-            f"✅ This channel (`#{interaction.channel.name}`) has been set for image messages.",
+            f"✅ This channel (`#{channel_name}`) has been set for image messages.",
             ephemeral=True
         )
 
@@ -74,7 +81,7 @@ def setup_setup_commands(bot):
     @discord.app_commands.describe(
         user="The user to check sightings for (leave empty for your own sightings)"
     )
-    async def usersightings(interaction: discord.Interaction, user: discord.User = None):
+    async def usersightings(interaction: discord.Interaction, user: discord.User | None = None):
         from utils import load_reactions
         
         # Default to the user who ran the command

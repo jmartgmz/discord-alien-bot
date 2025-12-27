@@ -188,7 +188,7 @@ def setup_admin_commands(bot, bot_start_time):
         await ctx.send(embed=embed)
 
     @bot.command(name="setlogchannel")
-    async def setlogchannel(ctx, channel: discord.TextChannel = None):
+    async def setlogchannel(ctx, channel: discord.TextChannel | None = None):
         """Set global logging channel (admin)"""
         # Check if user is admin
         if not is_admin_user(ctx.author.id):
@@ -202,6 +202,11 @@ def setup_admin_commands(bot, bot_start_time):
         # If no channel specified, use current channel
         if channel is None:
             channel = ctx.channel
+        
+        # Ensure channel is a TextChannel
+        if not isinstance(channel, discord.TextChannel):
+            await ctx.send("❌ Invalid channel type. Please specify a text channel.")
+            return
 
         # Set the global log channel (logs activity from ALL servers)
         from utils import set_global_log_channel_id

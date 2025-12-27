@@ -218,12 +218,7 @@ def setup_sightings_commands(bot):
             top_servers = sorted(server_totals.items(), key=lambda x: x[1], reverse=True)[:3]
             server_lines = []
             for i, (server_name, total) in enumerate(top_servers, start=1):
-                if i == 1:
-                    emoji = "🥇"
-                elif i == 2:
-                    emoji = "🥈"
-                elif i == 3:
-                    emoji = "🥉"
+                emoji = "🥇" if i == 1 else "🥈" if i == 2 else "🥉"
                 server_lines.append(f"{emoji} **{server_name}** - {total:,} sightings")
             
             embed.add_field(

@@ -146,7 +146,7 @@ def setup_support_commands(bot):
             await interaction.response.send_message(error_message, ephemeral=True)
 
     @bot.command(name="supportchannel")
-    async def set_support_channel(ctx, channel: discord.TextChannel = None):
+    async def set_support_channel(ctx, channel: discord.TextChannel | None = None):
         """Set support ticket channel (admin)"""
         # Check if user is admin
         if not is_admin_user(ctx.author.id):
@@ -160,6 +160,11 @@ def setup_support_commands(bot):
         # If no channel specified, use current channel
         if channel is None:
             channel = ctx.channel
+        
+        # Ensure channel is a TextChannel
+        if not isinstance(channel, discord.TextChannel):
+            await ctx.send("❌ Invalid channel type. Please specify a text channel.")
+            return
 
         guild_id = str(ctx.guild.id)
         

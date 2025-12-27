@@ -4,7 +4,10 @@ Uses Google Gemini AI to simulate conversations with aliens.
 """
 import os
 import discord
-import google.generativeai as genai
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None  # type: ignore
 import asyncio
 from datetime import datetime
 from utils.helpers import is_user_banned
@@ -12,10 +15,12 @@ from utils.helpers import is_user_banned
 # Configure Gemini AI
 def configure_gemini():
     """Configure Google Gemini AI with API key."""
+    if genai is None:
+        return False
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
         return False
-    genai.configure(api_key=api_key)
+    genai.configure(api_key=api_key)  # type: ignore
     return True
 
 # Alien persona prompt
@@ -50,7 +55,9 @@ async def chat_with_alien(message_content):
     for model_name in model_names:
         try:
             # Initialize the model
-            model = genai.GenerativeModel(model_name)
+            if genai is None:
+                return "❌ Gemini AI is not available. Please install google-generativeai package."
+            model = genai.GenerativeModel(model_name)  # type: ignore
             
             # Create the full prompt
             full_prompt = f"""

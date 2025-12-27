@@ -43,7 +43,7 @@ async def log_image_sent(channel, message, image_url):
         return
     
     global_log_channel = bot.get_channel(global_log_channel_id)
-    if not global_log_channel:
+    if not global_log_channel or not isinstance(global_log_channel, discord.TextChannel):
         return
     
     try:
@@ -122,6 +122,10 @@ async def send_images_to_guild(guild_id: str):
         # Get image with random effect applied
         image_content = await get_random_image_with_effect()
         try:
+            # Ensure channel is a text channel that can send messages
+            if not isinstance(channel, discord.TextChannel):
+                continue
+            
             # Send either URL string or Discord File
             if isinstance(image_content, str):
                 message = await channel.send(image_content)
@@ -158,7 +162,10 @@ async def send_images_to_guild(guild_id: str):
 @bot.event
 async def on_ready():
     """Called when the bot is ready."""
-    print(f"🤖 Bot is online as {bot.user.name}")
+    if bot.user:
+        print(f"🤖 Bot is online as {bot.user.name}")
+    else:
+        print("🤖 Bot is online")
     
     # Set bot status to DND and activity to "watching for ufos"
     activity = discord.Activity(type=discord.ActivityType.watching, name="Watching for Aliens")
@@ -228,7 +235,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     # if str(payload.emoji) != "👽":
     #     return
     
-    if payload.user_id == bot.user.id:
+    if bot.user and payload.user_id == bot.user.id:
         print(f"⏭️ Skipping bot's own reaction")
         return
 
@@ -265,8 +272,10 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     else:
         # Try to fetch the message to verify it's from the bot
         try:
+            if not isinstance(channel, discord.TextChannel):
+                return
             message = await channel.fetch_message(payload.message_id)
-            if message.author.id != bot.user.id:
+            if bot.user and message.author.id != bot.user.id:
                 print(f"⏭️ Skipping reaction to non-bot message from {message.author.id}")
                 return
             print(f"✅ Found message from bot, content: {message.content[:50]}...")
@@ -346,19 +355,23 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             inline=True
         )
         
-    log_embed.set_footer(text="UFO Reaction Tracking System")
-    
-    # Send to global logging channel if configured (logs all servers)
-    global_log_channel_id = get_global_log_channel_id()
-    if global_log_channel_id:
-        global_log_channel = bot.get_channel(global_log_channel_id)
-        if global_log_channel:
-            try:
-                await global_log_channel.send(embed=log_embed)
-                print(f"   ✅ Logged to global channel")
-            except Exception as e:
-                print(f"Failed to send log to global log channel: {e}")# Set up all command modules
+        log_embed.set_footer(text="UFO Reaction Tracking System")
+        
+        # Send to global logging channel if configured (logs all servers)
+        global_log_channel_id = get_global_log_channel_id()
+        if global_log_channel_id:
+            global_log_channel = bot.get_channel(global_log_channel_id)
+            if global_log_channel and isinstance(global_log_channel, discord.TextChannel):
+                try:
+                    await global_log_channel.send(embed=log_embed)
+                    print(f"   ✅ Logged to global channel")
+                except Exception as e:
+                    print(f"Failed to send log to global log channel: {e}")
+
+# Set up all command modules
 setup_all_commands(bot, bot_start_time)
 
 if __name__ == "__main__":
+    if token is None:
+        raise ValueError("DISCORD_TOKEN environment variable is not set")
     bot.run(token)
