@@ -4,6 +4,7 @@ Uses Google Gemini AI to simulate conversations with aliens.
 """
 import os
 import discord
+import logging
 try:
     import google.generativeai as genai
 except ImportError:
@@ -74,14 +75,14 @@ Respond as PAUL the alien. Keep your response SHORT (2-3 sentences maximum). Be 
             )
             
             if response.text:
-                print(f"✅ Alien response generated using model: {model_name}")
+                logging.info(f"✅ Alien response generated using model: {model_name}")
                 return response.text.strip()
             else:
                 continue  # Try next model
                 
         except Exception as e:
             error_msg = str(e).lower()
-            print(f"⚠️ Model {model_name} failed: {e}")
+            logging.error(f"⚠️ Model {model_name} failed: {e}")
             
             # Check for specific free tier errors
             if "quota exceeded" in error_msg or "rate limit" in error_msg:
@@ -171,7 +172,7 @@ def setup_alien_commands(bot):
             
             await interaction.followup.send(embed=embed, file=file)
             
-            print(f"👽 Alien chat: {interaction.user.display_name} -> '{message[:50]}...'")
+            logging.info(f"👽 Alien chat: {interaction.user.display_name} -> '{message[:50]}...'")
             
         except Exception as e:
             await interaction.followup.send(
@@ -181,4 +182,4 @@ def setup_alien_commands(bot):
                 f"Please try again in a moment.",
                 ephemeral=True
             )
-            print(f"❌ Alien chat error: {e}")
+            logging.error(f"❌ Alien chat error: {e}")

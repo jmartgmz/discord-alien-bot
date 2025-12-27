@@ -4,6 +4,7 @@ Channel setup and testing commands for the UFO Sighting Bot.
 import discord
 from discord.ext import commands
 import asyncio
+import logging
 from utils import load_config, save_config, get_random_image
 from utils.auth import is_admin_user
 
@@ -63,16 +64,16 @@ def setup_setup_commands(bot):
             # Track this test message too so reactions count
             from ufo_main import bot_ufo_messages, log_image_sent
             bot_ufo_messages[message.id] = str(ctx.guild.id) if ctx.guild else "dm"
-            print(f"🧪 Test image sent (Message ID: {message.id}) - now tracking for reactions")
+            logging.info(f"🧪 Test image sent (Message ID: {message.id}) - now tracking for reactions")
             
             # Log test image sending to global channel
             await log_image_sent(ctx.channel, message, image_url)
             
             await message.add_reaction("👽")
-            print(f"🤖 Bot added 👽 reaction to test message {message.id}")
+            logging.info(f"🤖 Bot added 👽 reaction to test message {message.id}")
             await asyncio.sleep(4)
             await message.delete()
-            print(f"🗑️ Test message {message.id} deleted after 4 seconds")
+            logging.info(f"🗑️ Test message {message.id} deleted after 4 seconds")
             await status_msg.edit(content="✅ Test image sent, reacted, and deleted.")
         except discord.HTTPException as e:
             await status_msg.edit(content=f"❌ Failed: {e}")

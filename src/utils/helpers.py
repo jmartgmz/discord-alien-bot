@@ -7,6 +7,7 @@ import io
 import aiohttp
 import json
 import os
+import logging
 from PIL import Image, ImageOps, ImageEnhance
 from datetime import datetime
 
@@ -97,7 +98,7 @@ async def apply_image_effect(image_url, effect):
             return discord.File(img_bytes, filename=f"ufo_{effect}.png")
             
     except Exception as e:
-        print(f"⚠️ Failed to apply image effect '{effect}': {e}")
+        logging.error(f"⚠️ Failed to apply image effect '{effect}': {e}")
         return image_url  # Return original URL if processing fails
 
 async def get_random_image_with_effect():
@@ -105,7 +106,7 @@ async def get_random_image_with_effect():
     base_url = random.choice(IMAGE_URLS)
     effect = random.choice(IMAGE_EFFECTS)
     
-    print(f"🎨 Applying effect '{effect}' to UFO image")
+    logging.info(f"🎨 Applying effect '{effect}' to UFO image")
     
     # Apply effect and return either URL or Discord File
     return await apply_image_effect(base_url, effect)
