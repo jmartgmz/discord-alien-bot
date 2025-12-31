@@ -45,14 +45,3 @@ def set_global_log_channel_id(channel_id):
     config = load_config()
     config["global_log_channel_id"] = channel_id
     save_config(config)
-
-def get_global_log_channel_id():
-    """Get the global logging channel ID that receives logs from all servers."""
-    config = load_config()
-    return config.get("global_log_channel_id")
-
-def set_global_log_channel_id(channel_id):
-    """Set the global logging channel ID for all servers."""
-    config = load_config()
-    config["global_log_channel_id"] = channel_id
-    save_config(config)

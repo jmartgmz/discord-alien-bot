@@ -4,7 +4,11 @@ Uses Google Gemini AI to simulate conversations with aliens.
 """
 import os
 import discord
-import google.generativeai as genai
+import logging
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None  # type: ignore
 import asyncio
 from datetime import datetime
 from utils.helpers import is_user_banned
@@ -12,10 +16,12 @@ from utils.helpers import is_user_banned
 # Configure Gemini AI
 def configure_gemini():
     """Configure Google Gemini AI with API key."""
+    if genai is None:
+        return False
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
         return False
-    genai.configure(api_key=api_key)
+    genai.configure(api_key=api_key)  # type: ignore
     return True
 
 # Alien persona prompt
@@ -50,7 +56,9 @@ async def chat_with_alien(message_content):
     for model_name in model_names:
         try:
             # Initialize the model
-            model = genai.GenerativeModel(model_name)
+            if genai is None:
+                return "❌ Gemini AI is not available. Please install google-generativeai package."
+            model = genai.GenerativeModel(model_name)  # type: ignore
             
             # Create the full prompt
             full_prompt = f"""
@@ -67,14 +75,14 @@ Respond as PAUL the alien. Keep your response SHORT (2-3 sentences maximum). Be 
             )
             
             if response.text:
-                print(f"✅ Alien response generated using model: {model_name}")
+                logging.info(f"✅ Alien response generated using model: {model_name}")
                 return response.text.strip()
             else:
                 continue  # Try next model
                 
         except Exception as e:
             error_msg = str(e).lower()
-            print(f"⚠️ Model {model_name} failed: {e}")
+            logging.error(f"⚠️ Model {model_name} failed: {e}")
             
             # Check for specific free tier errors
             if "quota exceeded" in error_msg or "rate limit" in error_msg:
@@ -160,11 +168,11 @@ def setup_alien_commands(bot):
             # Create file attachment for local image
             file_path = "assets/images/image.png"
             file = discord.File(file_path, filename="grok_image.png")
-            embed.set_image(url="attachment://grok_image.png")
+            embed.set_thumbnail(url="attachment://grok_image.png")
             
             await interaction.followup.send(embed=embed, file=file)
             
-            print(f"👽 Alien chat: {interaction.user.display_name} -> '{message[:50]}...'")
+            logging.info(f"👽 Alien chat: {interaction.user.display_name} -> '{message[:50]}...'")
             
         except Exception as e:
             await interaction.followup.send(
@@ -174,4 +182,4 @@ def setup_alien_commands(bot):
                 f"Please try again in a moment.",
                 ephemeral=True
             )
-            print(f"❌ Alien chat error: {e}")
+            logging.error(f"❌ Alien chat error: {e}")

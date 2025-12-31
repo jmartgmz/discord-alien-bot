@@ -115,18 +115,18 @@ def setup_help_commands(bot):
 
         # Admin commands
         admin_commands = [
-            "`/botinfo` - Display bot system information and stats",
-            "`/authorize <user>` - Add user to the admin list",
-            "`/deauthorize <user>` - Remove user from the admin list",
-            "`/listauthorized` - List all admin users",
-            "`/setlogchannel [channel]` - Set global logging channel (logs all servers)",
-            "`/supportchannel [channel]` - Set channel for support requests",
-            "`/reply <ticket_id> <response>` - Reply to a support ticket",
-            "`/ban <user> [reason]` - Ban a user from using the bot",
-            "`/unban <user>` - Unban a user from using the bot",
-            "`/globalmessage <message>` - Send a message to all servers",
-            "`/testimage` - Send a test UFO image",
-            "`/testsetup` - Replay the welcome setup message"
+            "`!botinfo` - Display bot system information and stats",
+            "`!authorize <user>` - Add user to the admin list",
+            "`!deauthorize <user>` - Remove user from the admin list",
+            "`!listauthorized` - List all admin users",
+            "`!setlogchannel [channel]` - Set global logging channel (logs all servers)",
+            "`!supportchannel [channel]` - Set channel for support requests",
+            "`!reply <ticket_id> <response>` - Reply to a support ticket",
+            "`!ban <user> [reason]` - Ban a user from using the bot",
+            "`!unban <user>` - Unban a user from using the bot",
+            "`!globalmessage <message>` - Send a message to all servers",
+            "`!testimage` - Send a test UFO image",
+            "`!testsetup` - Replay the welcome setup message"
         ]
 
         embed.add_field(
@@ -137,7 +137,7 @@ def setup_help_commands(bot):
 
         # Owner commands
         owner_commands = [
-            "`/sync` - Manually sync slash commands (Owner only)"
+            "`!sync` - Manually sync slash commands (Owner only)"
         ]
 
         embed.add_field(
