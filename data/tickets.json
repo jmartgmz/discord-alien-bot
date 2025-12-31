@@ -59,5 +59,14 @@
         "admin_response": "bro",
         "admin_responder": "json",
         "response_timestamp": "2025-10-02T22:32:33.350888"
+    },
+    "6669af3d": {
+        "user_id": 356213227602051074,
+        "user_name": "Aava \ud83e\udd0f\ud83d\udccf",
+        "guild_id": 513556520093351947,
+        "guild_name": "FC Schalke 04",
+        "message": "you fat fucking chud, where are the aliens",
+        "timestamp": "2025-11-20T18:30:51.661670",
+        "status": "open"
     }
 }
