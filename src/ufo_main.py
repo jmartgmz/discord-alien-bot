@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 # Import our custom modules
 from utils import load_config, load_reactions, save_reactions, get_random_image, get_random_interval, get_global_log_channel_id, create_welcome_embed
 from utils.helpers import get_random_image_with_effect, is_user_banned
+from utils.database import init_database
 from commands import setup_all_commands
 
 # Load environment variables
@@ -163,6 +164,13 @@ async def send_images_to_guild(guild_id: str):
 @bot.event
 async def on_ready():
     """Called when the bot is ready."""
+    # Initialize database
+    try:
+        init_database()
+        logging.info("✅ Database initialized")
+    except Exception as e:
+        logging.error(f"❌ Database initialization failed: {e}")
+    
     if bot.user:
         logging.info(f"🤖 Bot is online as {bot.user.name}")
     else:
