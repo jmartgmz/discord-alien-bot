@@ -76,28 +76,25 @@ def get_bot_stats():
     }
 
 def get_reaction_stats():
-    """Get reaction statistics from data file."""
+    """Get reaction statistics from database."""
     try:
-        import json
-        reactions_file = 'data/reactions.json'
-        if os.path.exists(reactions_file):
-            with open(reactions_file, 'r') as f:
-                reactions_data = json.load(f)
-            
-            total_reactions = 0
-            total_users = 0
-            guilds_tracking = len(reactions_data)
-            
-            for guild_id, users in reactions_data.items():
-                if isinstance(users, dict):
-                    total_users += len(users)
-                    total_reactions += sum(users.values())
-            
-            return {
-                'total_reactions': total_reactions,
-                'total_users': total_users,
-                'guilds_tracking': guilds_tracking
-            }
+        from utils.config import load_reactions
+        reactions_data = load_reactions()
+        
+        total_reactions = 0
+        total_users = 0
+        guilds_tracking = len(reactions_data)
+        
+        for guild_id, users in reactions_data.items():
+            if isinstance(users, dict):
+                total_users += len(users)
+                total_reactions += sum(users.values())
+        
+        return {
+            'total_reactions': total_reactions,
+            'total_users': total_users,
+            'guilds_tracking': guilds_tracking
+        }
     except Exception as e:
         logging.error(f"Error reading reaction stats: {e}")
     

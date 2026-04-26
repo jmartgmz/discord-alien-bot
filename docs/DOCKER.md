@@ -2,8 +2,6 @@
 
 This guide explains how to run the Discord Alien Bot using Docker.
 
-> **Note**: For CosmosCloud/Cosmos Server deployment, see [COSMOS_DEPLOYMENT.md](COSMOS_DEPLOYMENT.md)
-
 ## Prerequisites
 
 - Docker installed ([Get Docker](https://docs.docker.com/get-docker/))
@@ -26,19 +24,19 @@ DASHBOARD_PORT=8080  # Optional, defaults to 8080
 
 ```bash
 # Build and start the bot
-docker-compose up -d
+docker compose up -d
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Access web dashboard
 # Open http://localhost:8080 in your browser
 
 # Stop the bot
-docker-compose down
+docker compose down
 
 # Restart the bot
-docker-compose restart
+docker compose restart
 ```
 
 ### 3. Or Build and Run with Docker Commands
@@ -74,7 +72,7 @@ The bot includes a web dashboard for monitoring:
 - **URL**: http://localhost:8080 (or your server's IP:8080)
 - **Features**:
   - Real-time bot status (online/offline)
-  - Memory and CPU usage
+  - Memory usage
   - Uptime tracking
   - Connected guilds and users
   - Discord API latency
@@ -102,14 +100,14 @@ Your data will persist even if you rebuild or restart the container.
 
 ### View Logs
 ```bash
-docker-compose logs -f discord-bot
+docker compose logs -f discord-bot
 # or
 docker logs -f discord-alien-bot
 ```
 
 ### Restart Bot
 ```bash
-docker-compose restart
+docker compose restart
 # or
 docker restart discord-alien-bot
 ```
@@ -120,19 +118,19 @@ docker restart discord-alien-bot
 git pull
 
 # Rebuild and restart
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ### Stop Bot
 ```bash
-docker-compose down
+docker compose down
 # or
 docker stop discord-alien-bot
 ```
 
 ### Access Bot Shell (for debugging)
 ```bash
-docker-compose exec discord-bot /bin/bash
+docker compose exec discord-bot /bin/bash
 # or
 docker exec -it discord-alien-bot /bin/bash
 ```
@@ -148,7 +146,7 @@ You can adjust these in `docker-compose.yml` under the `deploy.resources` sectio
 ## Troubleshooting
 
 ### Bot won't start
-1. Check logs: `docker-compose logs`
+1. Check logs: `docker compose logs`
 2. Verify `.env` file has correct tokens
 3. Ensure data directory has write permissions
 
@@ -167,11 +165,11 @@ memory: 1G  # instead of 512M
 ### Rebuild from scratch
 ```bash
 # Remove old containers and images
-docker-compose down
+docker compose down
 docker rmi discord-alien-bot
 
 # Rebuild
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## Production Deployment
@@ -185,12 +183,6 @@ For production, consider:
 5. **Use secrets** - Consider Docker secrets instead of env files for sensitive data
 
 ## Advanced Configuration
-
-### Custom Port Mapping (if needed in future)
-```yaml
-ports:
-  - "8080:8080"
-```
 
 ### Multiple Bots
 To run multiple instances, duplicate the service in `docker-compose.yml` with different names and env files.

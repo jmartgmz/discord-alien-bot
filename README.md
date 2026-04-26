@@ -73,17 +73,13 @@ ufo-sighting-bot/
 │   │   └── helpers.py        # Helper functions and constants
 │   ├── ufo_main.py           # Main bot file
 │   └── ufo_main_backup.py    # Backup of original monolithic file
-├── data/                     # Data files (gitignored)
-│   ├── config.json           # Server configurations
-│   ├── reactions.json        # Reaction tracking data
-│   ├── authorized_users.json # User authorization settings
-│   ├── config.json.example   # Example server config
-│   ├── reactions.json.example # Example reactions file
-│   └── authorized_users.json.example # Example auth config
+├── data/                     # Data directory (gitignored)
+│   ├── ufo_bot.db            # SQLite database for persistent storage
+│   └── tickets.json          # Support tickets tracking
 ├── logs/                     # Log files
 ├── docs/                     # Documentation
 ├── run_bot.py                # Bot launcher script
-├── setup.sh                  # Setup script for new installations
+
 ├── requirements.txt          # Python dependencies
 ├── .env.example             # Environment variables template
 ├── .gitignore               # Git ignore rules
@@ -92,11 +88,11 @@ ufo-sighting-bot/
 
 ## 🛠️ Configuration
 
-The bot automatically creates and manages several configuration files with **persistent storage**:
+The bot automatically creates and manages a SQLite database (`data/ufo_bot.db`) for **persistent storage**. The database holds:
 
-- `data/config.json` - Stores channel configurations for each server
-- `data/reactions.json` - Tracks user reaction counts across all servers (survives bot restarts)
-- `data/authorized_users.json` - Controls who can use restricted commands
+- Channel configurations for each server
+- User reaction counts across all servers (survives bot restarts)
+- User authorizations and ban lists
 
 ### 🔐 Authorization System
 
@@ -106,7 +102,7 @@ The bot includes a built-in authorization system for sensitive commands:
 **Botinfo Users** - Can use the `/botinfo` command to view bot statistics
 
 **Default Setup:**
-1. On first run, the bot creates `data/authorized_users.json` with your Discord ID as an admin
+1. On first run, the bot initializes the SQLite database with your Discord ID as an admin
 2. Admins can use `/authorize @user` to grant botinfo access
 3. Use `/deauthorize @user` to remove access
 4. Use `/listauthorized` to see all authorized users
