@@ -77,12 +77,13 @@ async def log_image_sent(channel, message, image_url):
         
         log_embed.add_field(
             name="🖼️ Image URL",
-            value=f"[View Image]({image_url})",
+            value=f"[View Image]({image_url})" if image_url.startswith("http") else "Image attached directly",
             inline=False
         )
         
         log_embed.set_footer(text="UFO Image Deployment System")
-        log_embed.set_thumbnail(url=image_url)  # Show the image as thumbnail
+        if image_url.startswith("http"):
+            log_embed.set_thumbnail(url=image_url)  # Show the image as thumbnail
         
         await global_log_channel.send(embed=log_embed)
         logging.info(f"   📡 Image send logged to global channel")
@@ -134,7 +135,7 @@ async def send_images_to_guild(guild_id: str):
                 image_url = image_content
             else:  # Discord File object
                 message = await channel.send(file=image_content)
-                image_url = f"[Processed UFO Image with effects]"
+                image_url = message.attachments[0].url if message.attachments else "[Processed UFO Image with effects]"
             
             # Track this message ID so we know it's from the bot even after deletion
             bot_ufo_messages[message.id] = guild_id

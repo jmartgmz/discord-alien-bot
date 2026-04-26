@@ -58,8 +58,8 @@ async def apply_image_effect(image_url, effect):
         
         # Process the image with PIL
         with Image.open(io.BytesIO(image_data)) as img:
-            # Convert to RGB if necessary
-            if img.mode in ('RGBA', 'LA', 'P'):
+            # Convert to RGB to ensure compatibility with all effects
+            if img.mode != 'RGB':
                 img = img.convert('RGB')
             
             # Apply the selected effect

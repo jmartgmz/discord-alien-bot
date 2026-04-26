@@ -214,3 +214,7 @@ __marimo__/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# other
+
+test_env

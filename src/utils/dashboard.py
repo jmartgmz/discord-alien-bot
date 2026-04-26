@@ -137,7 +137,7 @@ DASHBOARD_HTML = """
             margin: 0 auto;
             background: #2a2a2a;
             padding: 30px;
-            border-radius: 8px;
+            border-radius: 3px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .header {
@@ -153,7 +153,7 @@ DASHBOARD_HTML = """
         .status-badge {
             display: inline-block;
             padding: 6px 16px;
-            border-radius: 4px;
+            border-radius: 2px;
             font-weight: 500;
             text-transform: uppercase;
             font-size: 0.85em;
@@ -175,7 +175,7 @@ DASHBOARD_HTML = """
         .card {
             background: #333333;
             border: 1px solid #3a3a3a;
-            border-radius: 6px;
+            border-radius: 2px;
             padding: 20px;
         }
         .card-title {
@@ -196,7 +196,7 @@ DASHBOARD_HTML = """
         }
         .section {
             border: 1px solid #3a3a3a;
-            border-radius: 6px;
+            border-radius: 2px;
             padding: 20px;
             margin-bottom: 20px;
             background: #333333;
@@ -211,7 +211,7 @@ DASHBOARD_HTML = """
             width: 100%;
             height: 24px;
             background: #1a1a1a;
-            border-radius: 4px;
+            border-radius: 2px;
             overflow: hidden;
             margin-top: 10px;
             position: relative;
@@ -259,9 +259,10 @@ DASHBOARD_HTML = """
         .logs-container {
             background: #1a1a1a;
             border: 1px solid #3a3a3a;
-            border-radius: 6px;
+            border-radius: 2px;
             padding: 15px;
-            max-height: 400px;
+            height: 600px;
+            max-height: 800px;
             overflow-y: auto;
             font-family: 'Courier New', monospace;
             font-size: 0.85em;
@@ -307,7 +308,7 @@ DASHBOARD_HTML = """
         }
         .logs-container::-webkit-scrollbar-thumb {
             background: #3a3a3a;
-            border-radius: 4px;
+            border-radius: 2px;
         }
         .logs-container::-webkit-scrollbar-thumb:hover {
             background: #4a4a4a;
@@ -340,14 +341,7 @@ DASHBOARD_HTML = """
                     <div class="progress-text">{{ stats.memory_percent }}%</div>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-title">CPU Usage</div>
-                <div class="card-value">{{ stats.cpu_percent }}%</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ stats.cpu_percent }}%"></div>
-                    <div class="progress-text">{{ stats.cpu_percent }}%</div>
-                </div>
-            </div>
+
             <div class="card">
                 <div class="card-title">Guilds</div>
                 <div class="card-value">{{ stats.guild_count }}</div>
@@ -386,21 +380,6 @@ DASHBOARD_HTML = """
             </div>
         </div>
 
-        <div class="section">
-            <div class="section-title">Bot Information</div>
-            <div class="info-row">
-                <span class="info-label">Bot Name</span>
-                <span class="info-value">{{ stats.bot_name }}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">Bot ID</span>
-                <span class="info-value">{{ stats.bot_id }}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">Status</span>
-                <span class="info-value">{{ stats.status }}</span>
-            </div>
-        </div>
 
         <div class="section">
             <div class="section-title">Recent Logs (Last 50)</div>
