@@ -15,8 +15,6 @@ from datetime import datetime
 IMAGE_URLS = [
     "https://s.hdnux.com/photos/01/25/20/06/22348185/4/rawImage.jpg",
     "https://brobible.com/wp-content/uploads/2023/08/ufo-over-city-clouds.png",
-    "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800",
-    "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=800",
     "https://hips.hearstapps.com/hmg-prod/images/vintage-old-black-and-white-ufo-photo-royalty-free-image-1677115000.jpg?resize=1200:*",
     "https://assets.newsweek.com/wp-content/uploads/2025/08/2097556-ufo-calvine-photo.jpg",
     "https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/25440927/GettyImages_875509_001.jpg?quality=90&strip=all&crop=0.078124999999993%2C0%2C99.84375%2C100&w=750",
