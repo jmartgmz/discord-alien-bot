@@ -67,6 +67,9 @@ def save_config(config):
         if guild_id == "global_log_channel_id":
             continue
         
+        if not str(guild_id).isdigit():
+            continue
+        
         guild_id = int(guild_id)
         
         if isinstance(value, dict):
@@ -104,7 +107,13 @@ def save_reactions(data):
     # This is kept for backward compatibility but is less efficient
     # It's better to use increment_user_reactions() directly
     for guild_id, users in data.items():
+        if not str(guild_id).isdigit():
+            continue
+        if not isinstance(users, dict):
+            continue
         for user_id, count in users.items():
+            if not str(user_id).isdigit():
+                continue
             # This will set the count to the exact value
             current_count = get_user_reactions(int(guild_id), int(user_id))
             diff = count - current_count

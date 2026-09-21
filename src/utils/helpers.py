@@ -15,8 +15,8 @@ from datetime import datetime
 IMAGE_URLS = [
     "https://s.hdnux.com/photos/01/25/20/06/22348185/4/rawImage.jpg",
     "https://brobible.com/wp-content/uploads/2023/08/ufo-over-city-clouds.png",
-    "https://api.time.com/wp-content/uploads/2016/02/150222-ufo-sightings-06.jpg",
-    "https://www.washingtonpost.com/news/morning-mix/wp-content/uploads/sites/21/2015/01/UFO-04-1024x666.jpg",
+    "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800",
+    "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=800",
     "https://hips.hearstapps.com/hmg-prod/images/vintage-old-black-and-white-ufo-photo-royalty-free-image-1677115000.jpg?resize=1200:*",
     "https://assets.newsweek.com/wp-content/uploads/2025/08/2097556-ufo-calvine-photo.jpg",
     "https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/25440927/GettyImages_875509_001.jpg?quality=90&strip=all&crop=0.078124999999993%2C0%2C99.84375%2C100&w=750",
@@ -25,7 +25,7 @@ IMAGE_URLS = [
 ]
 
 # Image effects that can be applied randomly
-IMAGE_EFFECTS = [""
+IMAGE_EFFECTS = [
     "normal",      # 60% chance - no effect (most common)
     "normal",
     "normal", 
@@ -48,10 +48,15 @@ async def apply_image_effect(image_url, effect):
         return image_url
     
     try:
-        # Download the image
-        async with aiohttp.ClientSession() as session:
+        # Download the image with browser headers and timeout
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        timeout = aiohttp.ClientTimeout(total=10)
+        async with aiohttp.ClientSession(headers=headers, timeout=timeout) as session:
             async with session.get(image_url) as response:
                 if response.status != 200:
+                    logging.warning(f"⚠️ Image download failed with status {response.status} for {image_url}")
                     return image_url  # Return original URL if download fails
                 
                 image_data = await response.read()

@@ -12,6 +12,9 @@ import logging
 
 app = Flask(__name__)
 
+# Silence werkzeug request/development server logging to prevent log spam
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
+
 # Global reference to bot instance
 bot_instance = None
 bot_start_time = None
@@ -22,8 +25,8 @@ recent_logs = deque(maxlen=100)
 class DashboardLogHandler(logging.Handler):
     """Custom log handler to capture logs for the dashboard."""
     def emit(self, record):
-        # Filter out Flask/werkzeug HTTP access logs
-        if record.name in ('werkzeug', 'flask.app') and 'GET' in record.getMessage():
+        # Filter out Flask/werkzeug HTTP access logs and server banners
+        if record.name.startswith(('werkzeug', 'flask')):
             return
         
         log_entry = {
@@ -443,6 +446,7 @@ def health():
 
 def run_dashboard(host='0.0.0.0', port=5000):
     """Run the Flask dashboard server."""
+    logging.getLogger('werkzeug').setLevel(logging.WARNING)
     app.run(host=host, port=port, debug=False, use_reloader=False)
 
 def start_dashboard_thread(bot, start_time, host='0.0.0.0', port=5000):

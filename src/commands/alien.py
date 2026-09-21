@@ -5,6 +5,8 @@ Uses Google Gemini AI to simulate conversations with aliens.
 import os
 import discord
 import logging
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 try:
     import google.generativeai as genai
 except ImportError:
@@ -49,7 +51,7 @@ async def chat_with_alien(message_content):
     model_names = [
         'models/gemini-2.5-flash',           # Latest fast model
         'models/gemini-flash-latest',        # Generic latest flash
-        'models/gemini-2.0-flash',           # Stable flash model
+        'models/gemini-2.5-pro',             # Latest pro model
         'models/gemini-pro-latest'           # Latest pro model
     ]
     

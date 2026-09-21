@@ -257,6 +257,11 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
         logging.info(f"⏭️ Skipping bot's own reaction")
         return
 
+    # Reactions in DMs cannot be tracked as guild sightings
+    if not payload.guild_id:
+        logging.info("⏭️ Skipping reaction outside of guild (DM)")
+        return
+
     # Prevent duplicate reactions within 5 seconds
     import time
     global recent_reactions
@@ -298,15 +303,18 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
                 return
             print(f"✅ Found message from bot, content: {message.content[:50]}...")
         except discord.NotFound:
-            # Message was deleted and we don't have it tracked - skip it
-            print(f"⏭️ Skipping reaction to deleted untracked message {payload.message_id}")
+            # Message was deleted and we don't have it tracked - skip it quietly
+            logging.info(f"⏭️ Skipping reaction to deleted untracked message {payload.message_id}")
+            return
+        except discord.HTTPException as e:
+            logging.warning(f"⚠️ Could not fetch message {payload.message_id}: {e}")
             return
         except Exception as e:
-            print(f"❌ Could not fetch message {payload.message_id}: {e}")
+            logging.error(f"❌ Error fetching message {payload.message_id}: {e}")
             return
 
     user_id = str(payload.user_id)
-    guild_id = str(payload.guild_id) if payload.guild_id else "dm"
+    guild_id = str(payload.guild_id)
 
     # Load current reactions data from file
     reactions_data = load_reactions()
@@ -315,7 +323,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     
     # Check current count before incrementing
     current_count = reactions_data[guild_id].get(user_id, 0)
-    print(f"📊 User {user_id} current count: {current_count} -> {current_count + 1}")
+    logging.info(f"📊 User {user_id} current count: {current_count} -> {current_count + 1}")
     
     if user_id not in reactions_data[guild_id]:
         reactions_data[guild_id][user_id] = 0
@@ -325,8 +333,8 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     save_reactions(reactions_data)
     
     # Console log with more detail
-    print(f"👽 SIGHTING TRACKED! Reaction by {user_id} in guild {guild_id}. Total: {reactions_data[guild_id][user_id]}")
-    print(f"   Emoji: {payload.emoji}, Message ID: {payload.message_id}")
+    logging.info(f"👽 SIGHTING TRACKED! Reaction by {user_id} in guild {guild_id}. Total: {reactions_data[guild_id][user_id]}")
+    logging.info(f"   Emoji: {payload.emoji}, Message ID: {payload.message_id}")
     
     # Create log embed (used for both per-server and global logging)
     if payload.guild_id:  # Only for guild messages, not DMs
@@ -382,9 +390,9 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             if global_log_channel and isinstance(global_log_channel, discord.TextChannel):
                 try:
                     await global_log_channel.send(embed=log_embed)
-                    print(f"   ✅ Logged to global channel")
+                    logging.info(f"   ✅ Logged to global channel")
                 except Exception as e:
-                    print(f"Failed to send log to global log channel: {e}")
+                    logging.error(f"Failed to send log to global log channel: {e}")
 
 # Set up all command modules
 setup_all_commands(bot, bot_start_time)
